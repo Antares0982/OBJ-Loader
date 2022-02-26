@@ -1,6 +1,16 @@
+/*
+ * Filename: OBJ-Loader\Source\OBJ_Loader.h
+ * Author: Bly7
+ * Last Modified: Antares
+ * Modified Date: Saturday, February 26th 2022, 5:42:00 pm
+ */
+
 // OBJ_Loader.h - A Single Header OBJ Model Loader
 
 #pragma once
+
+#ifndef OBJ_LOADER_HPP
+#define OBJ_LOADER_HPP
 
 // Iostream - STD I/O Library
 #include <iostream>
@@ -23,7 +33,7 @@
 // Namespace: OBJL
 //
 // Description: The namespace that holds eveyrthing that
-//	is needed and used for the OBJ Model Loader
+// is needed and used for the OBJ Model Loader
 namespace objl
 {
 	// Structure: Vector2
@@ -66,7 +76,7 @@ namespace objl
 		// Float Multiplication Operator Overload
 		Vector2 operator*(const float& other) const
 		{
-			return Vector2(this->X *other, this->Y * other);
+			return Vector2(this->X * other, this->Y * other);
 		}
 
 		// Positional Variables
@@ -222,7 +232,7 @@ namespace objl
 	namespace math
 	{
 		// Vector3 Cross Product
-		Vector3 CrossV3(const Vector3 a, const Vector3 b)
+		inline Vector3 CrossV3(const Vector3& a, const Vector3& b)
 		{
 			return Vector3(a.Y * b.Z - a.Z * b.Y,
 				a.Z * b.X - a.X * b.Z,
@@ -230,19 +240,19 @@ namespace objl
 		}
 
 		// Vector3 Magnitude Calculation
-		float MagnitudeV3(const Vector3 in)
+		inline float MagnitudeV3(const Vector3& in)
 		{
 			return (sqrtf(powf(in.X, 2) + powf(in.Y, 2) + powf(in.Z, 2)));
 		}
 
 		// Vector3 DotProduct
-		float DotV3(const Vector3 a, const Vector3 b)
+		inline float DotV3(const Vector3& a, const Vector3& b)
 		{
 			return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
 		}
 
 		// Angle between 2 Vector3 Objects
-		float AngleBetweenV3(const Vector3 a, const Vector3 b)
+		inline float AngleBetweenV3(const Vector3& a, const Vector3& b)
 		{
 			float angle = DotV3(a, b);
 			angle /= (MagnitudeV3(a) * MagnitudeV3(b));
@@ -250,7 +260,7 @@ namespace objl
 		}
 
 		// Projection Calculation of a onto b
-		Vector3 ProjV3(const Vector3 a, const Vector3 b)
+		inline Vector3 ProjV3(const Vector3& a, const Vector3& b)
 		{
 			Vector3 bn = b / MagnitudeV3(b);
 			return bn * DotV3(a, bn);
@@ -264,13 +274,13 @@ namespace objl
 	namespace algorithm
 	{
 		// Vector3 Multiplication Opertor Overload
-		Vector3 operator*(const float& left, const Vector3& right)
+		inline Vector3 operator*(const float& left, const Vector3& right)
 		{
 			return Vector3(right.X * left, right.Y * left, right.Z * left);
 		}
 
 		// A test to see if P1 is on the same side as P2 of a line segment ab
-		bool SameSide(Vector3 p1, Vector3 p2, Vector3 a, Vector3 b)
+		inline bool SameSide(Vector3 p1, Vector3 p2, Vector3 a, Vector3 b)
 		{
 			Vector3 cp1 = math::CrossV3(b - a, p1 - a);
 			Vector3 cp2 = math::CrossV3(b - a, p2 - a);
@@ -282,18 +292,18 @@ namespace objl
 		}
 
 		// Generate a cross produect normal for a triangle
-		Vector3 GenTriNormal(Vector3 t1, Vector3 t2, Vector3 t3)
+		inline Vector3 GenTriNormal(const Vector3& t1, const Vector3& t2, const Vector3& t3)
 		{
 			Vector3 u = t2 - t1;
 			Vector3 v = t3 - t1;
 
-			Vector3 normal = math::CrossV3(u,v);
+			Vector3 normal = math::CrossV3(u, v);
 
 			return normal;
 		}
 
 		// Check to see if a Vector3 Point is within a 3 Vector3 Triangle
-		bool inTriangle(Vector3 point, Vector3 tri1, Vector3 tri2, Vector3 tri3)
+		inline bool inTriangle(const Vector3& point, const Vector3& tri1, const Vector3& tri2, const Vector3& tri3)
 		{
 			// Test to see if it is within an infinite prism that the triangle outlines.
 			bool within_tri_prisim = SameSide(point, tri1, tri2, tri3) && SameSide(point, tri2, tri1, tri3)
@@ -318,9 +328,9 @@ namespace objl
 		}
 
 		// Split a String into a string array at a given token
-		inline void split(const std::string &in,
-			std::vector<std::string> &out,
-			std::string token)
+		inline void split(const std::string& in,
+			std::vector<std::string>& out,
+			const std::string& token)
 		{
 			out.clear();
 
@@ -357,7 +367,7 @@ namespace objl
 		}
 
 		// Get tail of string after first token and possibly following spaces
-		inline std::string tail(const std::string &in)
+		inline std::string tail(const std::string& in)
 		{
 			size_t token_start = in.find_first_not_of(" \t");
 			size_t space_start = in.find_first_of(" \t", token_start);
@@ -375,7 +385,7 @@ namespace objl
 		}
 
 		// Get first token of string
-		inline std::string firstToken(const std::string &in)
+		inline std::string firstToken(const std::string& in)
 		{
 			if (!in.empty())
 			{
@@ -395,7 +405,7 @@ namespace objl
 
 		// Get element at given index position
 		template <class T>
-		inline const T & getElement(const std::vector<T> &elements, std::string &index)
+		inline const T& getElement(const std::vector<T>& elements, std::string& index)
 		{
 			int idx = std::stoi(index);
 			if (idx < 0)
@@ -428,7 +438,7 @@ namespace objl
 		//
 		// If the file is unable to be found
 		// or unable to be loaded return false
-		bool LoadFile(std::string Path)
+		bool LoadFile(const std::string& Path)
 		{
 			// If the file is not an .obj file return false
 			if (Path.substr(Path.size() - 4, 4) != ".obj")
@@ -458,15 +468,15 @@ namespace objl
 
 			Mesh tempMesh;
 
-			#ifdef OBJL_CONSOLE_OUTPUT
+#ifdef OBJL_CONSOLE_OUTPUT
 			const unsigned int outputEveryNth = 1000;
 			unsigned int outputIndicator = outputEveryNth;
-			#endif
+#endif
 
 			std::string curline;
 			while (std::getline(file, curline))
 			{
-				#ifdef OBJL_CONSOLE_OUTPUT
+#ifdef OBJL_CONSOLE_OUTPUT
 				if ((outputIndicator = ((outputIndicator + 1) % outputEveryNth)) == 1)
 				{
 					if (!meshname.empty())
@@ -480,7 +490,7 @@ namespace objl
 							<< (!MeshMatNames.empty() ? "\t| material: " + MeshMatNames.back() : "");
 					}
 				}
-				#endif
+#endif
 
 				// Generate a Mesh Object or Prepare for an object to be created
 				if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g" || curline[0] == 'g')
@@ -530,10 +540,10 @@ namespace objl
 							}
 						}
 					}
-					#ifdef OBJL_CONSOLE_OUTPUT
+#ifdef OBJL_CONSOLE_OUTPUT
 					std::cout << std::endl;
 					outputIndicator = 0;
-					#endif
+#endif
 				}
 				// Generate a Vertex Position
 				if (algorithm::firstToken(curline) == "v")
@@ -600,7 +610,6 @@ namespace objl
 
 						indnum = (unsigned int)((LoadedVertices.size()) - vVerts.size()) + iIndices[i];
 						LoadedIndices.push_back(indnum);
-
 					}
 				}
 				// Get Mesh Material Name
@@ -615,10 +624,10 @@ namespace objl
 						tempMesh = Mesh(Vertices, Indices);
 						tempMesh.MeshName = meshname;
 						int i = 2;
-						while(1) {
+						while (1) {
 							tempMesh.MeshName = meshname + "_" + std::to_string(i);
 
-							for (auto &m : LoadedMeshes)
+							for (auto& m : LoadedMeshes)
 								if (m.MeshName == tempMesh.MeshName)
 									continue;
 							break;
@@ -632,9 +641,9 @@ namespace objl
 						Indices.clear();
 					}
 
-					#ifdef OBJL_CONSOLE_OUTPUT
+#ifdef OBJL_CONSOLE_OUTPUT
 					outputIndicator = 0;
-					#endif
+#endif
 				}
 				// Load Materials
 				if (algorithm::firstToken(curline) == "mtllib")
@@ -658,18 +667,18 @@ namespace objl
 
 					pathtomat += algorithm::tail(curline);
 
-					#ifdef OBJL_CONSOLE_OUTPUT
+#ifdef OBJL_CONSOLE_OUTPUT
 					std::cout << std::endl << "- find materials in: " << pathtomat << std::endl;
-					#endif
+#endif
 
 					// Load Materials
 					LoadMaterials(pathtomat);
 				}
 			}
 
-			#ifdef OBJL_CONSOLE_OUTPUT
+#ifdef OBJL_CONSOLE_OUTPUT
 			std::cout << std::endl;
-			#endif
+#endif
 
 			// Deal with last mesh
 
@@ -1003,7 +1012,7 @@ namespace objl
 		}
 
 		// Load Materials from .mtl file
-		bool LoadMaterials(std::string path)
+		bool LoadMaterials(const std::string& path)
 		{
 			// If the file is not a material file return false
 			if (path.substr(path.size() - 4, path.size()) != ".mtl")
@@ -1165,3 +1174,5 @@ namespace objl
 		}
 	};
 }
+
+#endif // OBJ_LOADER_HPP
